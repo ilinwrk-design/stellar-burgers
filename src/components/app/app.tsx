@@ -18,18 +18,30 @@ import {
 } from '@pages';
 import { Preloader } from '@ui';
 import { Route, Routes, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+
+import { getIngredients } from '../../services/ingredientsSlice';
+import { useDispatch, useSelector } from '../../services/store';
 
 import type { AppContentProps } from './type';
-import type { TIngredient } from '@utils-types';
 
 import '../../index.css';
 
 import styles from './app.module.css';
 
 const App = (): React.JSX.Element => {
-  const ingredients: TIngredient[] = [];
-  const isIngredientsLoading = false;
-  const ingredientsError = null;
+  const dispatch = useDispatch();
+
+  const ingredients = useSelector((state) => state.ingredients.ingredients);
+  const isIngredientsLoading = useSelector(
+    (state) => state.ingredients.isLoading
+  );
+  const ingredientsError = useSelector((state) => state.ingredients.error);
+
+  // Запрашиваем ингредиенты один раз при запуске приложения.
+  useEffect(() => {
+    void dispatch(getIngredients());
+  }, [dispatch]);
 
   return (
     <div className={styles.app}>
@@ -37,7 +49,7 @@ const App = (): React.JSX.Element => {
       <AppContent
         ingredients={ingredients}
         isLoading={isIngredientsLoading}
-        error={ingredientsError}
+        error={ingredientsError ? new Error(ingredientsError) : null}
       />
     </div>
   );

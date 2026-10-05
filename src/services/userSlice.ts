@@ -3,9 +3,10 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   getUserApi,
   loginUserApi,
+  logoutApi,
   registerUserApi
 } from '@utils/burger-api';
-import { setCookie } from '@utils/cookie';
+import { deleteCookie, setCookie } from '@utils/cookie';
 
 import type { TLoginData, TRegisterData } from '@utils/burger-api';
 import type { TUser } from '@utils-types';
@@ -56,6 +57,14 @@ export const registerUser = createAsyncThunk(
     return response.user;
   }
 );
+
+// Выходим из аккаунта и удаляем сохранённые токены.
+export const logoutUser = createAsyncThunk('user/logoutUser', async () => {
+  await logoutApi();
+
+  localStorage.removeItem('refreshToken');
+  deleteCookie('accessToken');
+});
 
 const userSlice = createSlice({
   name: 'user',
@@ -114,6 +123,20 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.error =
           action.error.message ?? 'Не удалось зарегистрироваться';
+      })
+
+      // Выход из аккаунта.
+      .addCase(logoutUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.isLoading = false;
+        state.user = null;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message ?? 'Не удалось выйти';
       });
   }
 });

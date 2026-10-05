@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import {
+  forgotPasswordApi,
   getUserApi,
   loginUserApi,
   logoutApi,
@@ -74,6 +75,14 @@ export const updateUser = createAsyncThunk(
     const response = await updateUserApi(data);
 
     return response.user;
+  }
+);
+
+// Отправляем запрос на восстановление пароля.
+export const forgotPassword = createAsyncThunk(
+  'user/forgotPassword',
+  async (email: string) => {
+    await forgotPasswordApi({ email });
   }
 );
 
@@ -163,6 +172,20 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.error =
           action.error.message ?? 'Не удалось обновить данные пользователя';
+      })
+
+      // Восстановление пароля.
+      .addCase(forgotPassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(forgotPassword.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          action.error.message ?? 'Не удалось отправить запрос восстановления';
       });
   }
 });

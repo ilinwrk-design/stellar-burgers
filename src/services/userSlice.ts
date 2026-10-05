@@ -4,7 +4,8 @@ import {
   getUserApi,
   loginUserApi,
   logoutApi,
-  registerUserApi
+  registerUserApi,
+  updateUserApi
 } from '@utils/burger-api';
 import { deleteCookie, setCookie } from '@utils/cookie';
 
@@ -65,6 +66,16 @@ export const logoutUser = createAsyncThunk('user/logoutUser', async () => {
   localStorage.removeItem('refreshToken');
   deleteCookie('accessToken');
 });
+
+// Обновляем данные пользователя.
+export const updateUser = createAsyncThunk(
+  'user/updateUser',
+  async (data: Partial<TRegisterData>) => {
+    const response = await updateUserApi(data);
+
+    return response.user;
+  }
+);
 
 const userSlice = createSlice({
   name: 'user',
@@ -137,6 +148,21 @@ const userSlice = createSlice({
       .addCase(logoutUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message ?? 'Не удалось выйти';
+      })
+
+      // Обновление данных пользователя.
+      .addCase(updateUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          action.error.message ?? 'Не удалось обновить данные пользователя';
       });
   }
 });

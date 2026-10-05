@@ -1,32 +1,37 @@
-import { forgotPasswordApi } from '@api';
 import { ForgotPasswordUI } from '@ui-pages';
-import { useState, type SyntheticEvent } from 'react';
+import { type SyntheticEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export const ForgotPassword = (): React.JSX.Element => {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState<Error | null>(null);
+import { forgotPasswordApi } from '@utils/burger-api';
 
+export const ForgotPassword = (): React.JSX.Element => {
   const navigate = useNavigate();
+
+  const [email, setEmail] = useState('');
+  const [errorText, setErrorText] = useState('');
 
   const handleSubmit = (e: SyntheticEvent): void => {
     e.preventDefault();
 
-    setError(null);
-    void forgotPasswordApi({ email })
+    forgotPasswordApi({ email })
       .then(() => {
-        localStorage.setItem('resetPassword', 'true');
-        void navigate('/reset-password', { replace: true });
+        navigate('/reset-password', {
+          state: {
+            fromForgotPassword: true
+          }
+        });
       })
-      .catch((err: Error) => setError(err));
+      .catch((error: Error) => {
+        setErrorText(error.message);
+      });
   };
 
   return (
     <ForgotPasswordUI
-      errorText={error?.message}
       email={email}
       setEmail={setEmail}
       handleSubmit={handleSubmit}
+      errorText={errorText}
     />
   );
 };

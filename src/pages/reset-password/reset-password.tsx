@@ -2,15 +2,18 @@ import { ResetPasswordUI } from '@ui-pages';
 import { type SyntheticEvent, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { resetPasswordApi } from '@utils/burger-api';
+import { resetPassword } from '../../services/userSlice';
+import { useDispatch, useSelector } from '../../services/store';
 
 export const ResetPassword = (): React.JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
-  const [errorText, setErrorText] = useState('');
+
+  const error = useSelector((state) => state.user.error);
 
   useEffect(() => {
     // На страницу сброса пароля можно попасть только после запроса восстановления.
@@ -19,19 +22,21 @@ export const ResetPassword = (): React.JSX.Element => {
     }
   }, [location.state, navigate]);
 
-  const handleSubmit = (e: SyntheticEvent): void => {
+  const handleSubmit = async (e: SyntheticEvent): Promise<void> => {
     e.preventDefault();
 
-    resetPasswordApi({
-      password,
-      token
-    })
-      .then(() => {
-        navigate('/login', { replace: true });
-      })
-      .catch((error: Error) => {
-        setErrorText(error.message);
-      });
+    try {
+      await dispatch(
+        resetPassword({
+          password,
+          token
+        })
+      ).unwrap();
+
+      navigate('/login', { replace: true });
+    } catch {
+      // Ошибка запроса сохраняется в Redux и отображается в форме.
+    }
   };
 
   return (
@@ -41,7 +46,7 @@ export const ResetPassword = (): React.JSX.Element => {
       setPassword={setPassword}
       setToken={setToken}
       handleSubmit={handleSubmit}
-      errorText={errorText}
+      errorText={error || ''}
     />
   );
 };

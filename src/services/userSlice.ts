@@ -6,6 +6,7 @@ import {
   loginUserApi,
   logoutApi,
   registerUserApi,
+  resetPasswordApi,
   updateUserApi
 } from '@utils/burger-api';
 import { deleteCookie, setCookie } from '@utils/cookie';
@@ -83,6 +84,14 @@ export const forgotPassword = createAsyncThunk(
   'user/forgotPassword',
   async (email: string) => {
     await forgotPasswordApi({ email });
+  }
+);
+
+// Устанавливаем новый пароль.
+export const resetPassword = createAsyncThunk(
+  'user/resetPassword',
+  async (data: { password: string; token: string }) => {
+    await resetPasswordApi(data);
   }
 );
 
@@ -186,6 +195,20 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.error =
           action.error.message ?? 'Не удалось отправить запрос восстановления';
+      })
+
+      // Установка нового пароля.
+      .addCase(resetPassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          action.error.message ?? 'Не удалось установить новый пароль';
       });
   }
 });

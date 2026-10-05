@@ -19,8 +19,12 @@ import {
 import { Preloader } from '@ui';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-
+import { getCookie } from '@utils/cookie';
 import { getIngredients } from '../../services/ingredientsSlice';
+import {
+  authCheckFinished,
+  getUser
+} from '../../services/userSlice';
 import { useDispatch, useSelector } from '../../services/store';
 
 import type { AppContentProps } from './type';
@@ -40,8 +44,16 @@ const App = (): React.JSX.Element => {
 
   // Запрашиваем ингредиенты один раз при запуске приложения.
   useEffect(() => {
-    void dispatch(getIngredients());
-  }, [dispatch]);
+  void dispatch(getIngredients());
+
+  // Если токен есть, запрашиваем данные текущего пользователя.
+  if (getCookie('accessToken')) {
+    void dispatch(getUser());
+  } else {
+    // Пользователь не авторизован, первоначальная проверка завершена.
+    dispatch(authCheckFinished());
+  }
+}, [dispatch]);
 
   return (
     <div className={styles.app}>

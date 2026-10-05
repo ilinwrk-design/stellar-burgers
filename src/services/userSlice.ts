@@ -7,10 +7,7 @@ import {
 } from '@utils/burger-api';
 import { setCookie } from '@utils/cookie';
 
-import type {
-  TLoginData,
-  TRegisterData
-} from '@utils/burger-api';
+import type { TLoginData, TRegisterData } from '@utils/burger-api';
 import type { TUser } from '@utils-types';
 
 type TUserState = {
@@ -63,7 +60,12 @@ export const registerUser = createAsyncThunk(
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {},
+  reducers: {
+    // Завершаем первоначальную проверку, если токена нет.
+    authCheckFinished: (state) => {
+      state.isAuthChecked = true;
+    }
+  },
   extraReducers: (builder) => {
     builder
       // Проверка текущего пользователя.
@@ -110,9 +112,12 @@ const userSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.error.message ?? 'Не удалось зарегистрироваться';
+        state.error =
+          action.error.message ?? 'Не удалось зарегистрироваться';
       });
   }
 });
+
+export const { authCheckFinished } = userSlice.actions;
 
 export default userSlice.reducer;

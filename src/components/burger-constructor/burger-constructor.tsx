@@ -2,25 +2,36 @@ import { BurgerConstructorUI } from '@ui';
 import { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { useSelector } from '../../services/store';
+import { clearConstructor } from '../../services/constructorSlice';
+import {
+  clearOrderModalData,
+  createOrder
+} from '../../services/orderSlice';
+import { useDispatch, useSelector } from '../../services/store';
 
-import type { TConstructorIngredient, TOrder } from '@utils-types';
+import type { TConstructorIngredient } from '@utils-types';
 
 export const BurgerConstructor = (): React.JSX.Element | null => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const constructorItems = useSelector(
     (state) => state.burgerConstructor
   );
   const user = useSelector((state) => state.user.user);
 
-  // Эти данные подключим к Redux, когда будем делать оформление заказа.
-  const orderRequest = false;
-  const orderModalData: TOrder | null = null;
+  const orderRequest = useSelector(
+    (state) => state.order.orderRequest
+  );
+  const orderModalData = useSelector(
+    (state) => state.order.orderModalData
+  );
 
-  const onOrderClick = (): void => {
-    if (!constructorItems.bun || orderRequest) return;
+  const onOrderClick = async (): Promise<void> => {
+    if (!constructorItems.bun || orderRequest) {
+      return;
+    }
 
     // Оформлять заказ может только авторизованный пользователь.
     if (!user) {
@@ -28,11 +39,26 @@ export const BurgerConstructor = (): React.JSX.Element | null => {
       return;
     }
 
-    // TODO: Оформить заказ
+    const ingredientIds = [
+      constructorItems.bun._id,
+      ...constructorItems.ingredients.map(
+        (ingredient) => ingredient._id
+      ),
+      constructorItems.bun._id
+    ];
+
+    try {
+      await dispatch(createOrder(ingredientIds)).unwrap();
+
+      // После успешного оформления заказа очищаем конструктор.
+      dispatch(clearConstructor());
+    } catch {
+      // Ошибка запроса сохраняется в orderSlice.
+    }
   };
 
   const closeOrderModal = (): void => {
-    // TODO: Закрыть модальное окно и сбросить заказ
+    dispatch(clearOrderModalData());
   };
 
   const price = useMemo(

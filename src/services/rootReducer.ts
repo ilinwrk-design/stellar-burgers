@@ -4,6 +4,7 @@ import constructorReducer from './constructorSlice';
 import feedReducer from './feedSlice';
 import ingredientsReducer from './ingredientsSlice';
 import orderReducer from './orderSlice';
+import profileOrdersReducer from './profileOrdersSlice';
 import userReducer from './userSlice';
 
 export const rootReducer = combineReducers({
@@ -11,5 +12,6 @@ export const rootReducer = combineReducers({
   user: userReducer,
   burgerConstructor: constructorReducer,
   order: orderReducer,
-  feed: feedReducer
+  feed: feedReducer,
+  profileOrders: profileOrdersReducer
 });

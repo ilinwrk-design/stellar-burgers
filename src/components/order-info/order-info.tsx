@@ -1,42 +1,65 @@
-import { Preloader, OrderInfoUI } from '@ui';
-import { useMemo } from 'react';
+import { OrderInfoUI, Preloader } from '@ui';
+import { useEffect, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+
+import {
+  clearOrderInfo,
+  getOrderByNumber
+} from '../../services/orderInfoSlice';
+import { useDispatch, useSelector } from '../../services/store';
 
 import type { TIngredient } from '@utils-types';
 
 export const OrderInfo = (): React.JSX.Element => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0,
-  };
+  const dispatch = useDispatch();
 
-  const ingredients: TIngredient[] = [];
+  // Получаем номер заказа из адресной строки.
+  const { number } = useParams();
 
-  /* Готовим данные для отображения */
+  // Получаем данные заказа и список всех ингредиентов из Redux.
+  const order = useSelector((state) => state.orderInfo.order);
+  const ingredients = useSelector((state) => state.ingredients.ingredients);
+
+  useEffect(() => {
+    // Загружаем данные заказа по номеру из маршрута.
+    if (number) {
+      void dispatch(getOrderByNumber(Number(number)));
+    }
+
+    // При закрытии страницы или модального окна очищаем данные заказа.
+    return () => {
+      dispatch(clearOrderInfo());
+    };
+  }, [dispatch, number]);
+
+  // Подготавливаем данные заказа в формате, который нужен OrderInfoUI.
   const orderInfo = useMemo(() => {
-    if (!orderData || !ingredients.length) return null;
+    if (!order || !ingredients.length) {
+      return null;
+    }
 
-    const date = new Date(orderData.createdAt);
+    // Находим полную информацию об ингредиентах заказа
+    // и считаем количество каждого ингредиента.
+    const ingredientsInfo = order.ingredients.reduce(
+      (
+        acc: Record<string, TIngredient & { count: number }>,
+        ingredientId
+      ) => {
+        const ingredient = ingredients.find(
+          (item) => item._id === ingredientId
+        );
 
-    type TIngredientsWithCount = Record<string, TIngredient & { count: number }>;
+        if (!ingredient) {
+          return acc;
+        }
 
-    const ingredientsInfo = orderData.ingredients.reduce(
-      (acc: TIngredientsWithCount, item) => {
-        if (!acc[item]) {
-          const ingredient = ingredients.find((ing) => ing._id === item);
-          if (ingredient) {
-            acc[item] = {
-              ...ingredient,
-              count: 1,
-            };
-          }
+        if (acc[ingredientId]) {
+          acc[ingredientId].count += 1;
         } else {
-          acc[item].count++;
+          acc[ingredientId] = {
+            ...ingredient,
+            count: 1
+          };
         }
 
         return acc;
@@ -44,19 +67,21 @@ export const OrderInfo = (): React.JSX.Element => {
       {}
     );
 
+    // Считаем общую стоимость всех ингредиентов заказа.
     const total = Object.values(ingredientsInfo).reduce(
-      (acc, item) => acc + item.price * item.count,
+      (sum, ingredient) => sum + ingredient.price * ingredient.count,
       0
     );
 
     return {
-      ...orderData,
+      ...order,
       ingredientsInfo,
-      date,
-      total,
+      date: new Date(order.createdAt),
+      total
     };
-  }, [orderData, ingredients]);
+  }, [order, ingredients]);
 
+  // Пока данные заказа не подготовлены, показываем загрузку.
   if (!orderInfo) {
     return <Preloader />;
   }

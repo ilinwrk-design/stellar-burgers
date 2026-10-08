@@ -2,6 +2,7 @@ import { OrderCardUI } from '@ui';
 import { memo, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
+import { selectIngredients } from '../../services/selectors';
 import { useSelector } from '../../services/store';
 
 import type { OrderCardProps } from './type';
@@ -15,9 +16,7 @@ export const OrderCard = memo(function OrderCard({
   const location = useLocation();
 
   // Получаем полный список ингредиентов из Redux.
-  const ingredients = useSelector(
-    (state) => state.ingredients.ingredients
-  );
+  const ingredients = useSelector(selectIngredients);
 
   const orderInfo = useMemo(() => {
     if (!ingredients.length) {

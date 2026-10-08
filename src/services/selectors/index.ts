@@ -3,6 +3,9 @@ import type { RootState } from '../store';
 // Получаем данные текущего пользователя.
 export const selectUser = (state: RootState) => state.user.user;
 
+// Получаем ошибку запроса пользователя.
+export const selectUserError = (state: RootState) => state.user.error;
+
 // Получаем список ингредиентов.
 export const selectIngredients = (state: RootState) =>
   state.ingredients.ingredients;

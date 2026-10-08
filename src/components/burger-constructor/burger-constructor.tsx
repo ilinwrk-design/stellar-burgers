@@ -7,6 +7,12 @@ import {
   clearOrderModalData,
   createOrder
 } from '../../services/orderSlice';
+import {
+  selectBurgerConstructor,
+  selectOrderModalData,
+  selectOrderRequest,
+  selectUser
+} from '../../services/selectors';
 import { useDispatch, useSelector } from '../../services/store';
 
 import type { TConstructorIngredient } from '@utils-types';
@@ -16,17 +22,10 @@ export const BurgerConstructor = (): React.JSX.Element | null => {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const constructorItems = useSelector(
-    (state) => state.burgerConstructor
-  );
-  const user = useSelector((state) => state.user.user);
-
-  const orderRequest = useSelector(
-    (state) => state.order.orderRequest
-  );
-  const orderModalData = useSelector(
-    (state) => state.order.orderModalData
-  );
+  const constructorItems = useSelector(selectBurgerConstructor);
+  const user = useSelector(selectUser);
+  const orderRequest = useSelector(selectOrderRequest);
+  const orderModalData = useSelector(selectOrderModalData);
 
   const onOrderClick = async (): Promise<void> => {
     if (!constructorItems.bun || orderRequest) {

@@ -18,3 +18,11 @@ export const selectIngredientsError = (state: RootState) =>
 // Получаем содержимое конструктора.
 export const selectBurgerConstructor = (state: RootState) =>
   state.burgerConstructor;
+
+// Получаем состояние отправки заказа.
+export const selectOrderRequest = (state: RootState) =>
+  state.order.orderRequest;
+
+// Получаем данные заказа для модального окна.
+export const selectOrderModalData = (state: RootState) =>
+  state.order.orderModalData;

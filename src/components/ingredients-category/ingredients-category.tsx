@@ -1,6 +1,7 @@
 import { IngredientsCategoryUI } from '@ui';
 import { useMemo } from 'react';
 
+import { selectBurgerConstructor } from '../../services/selectors';
 import { useSelector } from '../../services/store';
 
 import type { TIngredientsCategoryProps } from './type';
@@ -13,9 +14,7 @@ export const IngredientsCategory = ({
   ref
 }: TIngredientsCategoryProps): React.JSX.Element => {
   // Получаем текущий состав конструктора из Redux.
-  const burgerConstructor = useSelector(
-    (state) => state.burgerConstructor
-  );
+  const burgerConstructor = useSelector(selectBurgerConstructor);
 
   // Считаем количество каждого ингредиента в конструкторе.
   const ingredientsCounters = useMemo(() => {

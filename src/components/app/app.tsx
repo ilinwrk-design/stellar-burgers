@@ -25,6 +25,8 @@ import {
 } from 'react-router-dom';
 import { useEffect } from 'react';
 
+import { selectIngredients } from '../../services/selectors';
+
 import { getCookie } from '@utils/cookie';
 
 import { getIngredients } from '../../services/ingredientsSlice';
@@ -43,7 +45,7 @@ import styles from './app.module.css';
 const App = (): React.JSX.Element => {
   const dispatch = useDispatch();
 
-  const ingredients = useSelector((state) => state.ingredients.ingredients);
+ const ingredients = useSelector(selectIngredients);
   const isIngredientsLoading = useSelector(
     (state) => state.ingredients.isLoading
   );

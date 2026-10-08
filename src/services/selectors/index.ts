@@ -36,3 +36,15 @@ export const selectFeedOrders = (state: RootState) => state.feed.orders;
 // Получаем состояние загрузки ленты.
 export const selectFeedLoading = (state: RootState) =>
   state.feed.isLoading;
+
+// Получаем историю заказов пользователя.
+export const selectProfileOrders = (state: RootState) =>
+  state.profileOrders.orders;
+
+// Получаем состояние загрузки истории заказов.
+export const selectProfileOrdersLoading = (state: RootState) =>
+  state.profileOrders.isLoading;
+
+// Получаем подробности выбранного заказа.
+export const selectOrderInfo = (state: RootState) =>
+  state.orderInfo.order;

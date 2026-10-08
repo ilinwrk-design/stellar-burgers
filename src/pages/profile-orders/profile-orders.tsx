@@ -3,15 +3,17 @@ import { ProfileOrdersUI } from '@ui-pages';
 import { useEffect } from 'react';
 
 import { getProfileOrders } from '../../services/profileOrdersSlice';
+import {
+  selectProfileOrders,
+  selectProfileOrdersLoading
+} from '../../services/selectors';
 import { useDispatch, useSelector } from '../../services/store';
 
 export const ProfileOrders = (): React.JSX.Element => {
   const dispatch = useDispatch();
 
-  const orders = useSelector((state) => state.profileOrders.orders);
-  const isLoading = useSelector(
-    (state) => state.profileOrders.isLoading
-  );
+  const orders = useSelector(selectProfileOrders);
+  const isLoading = useSelector(selectProfileOrdersLoading);
 
   useEffect(() => {
     void dispatch(getProfileOrders());

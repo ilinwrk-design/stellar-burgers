@@ -6,6 +6,10 @@ import {
   clearOrderInfo,
   getOrderByNumber
 } from '../../services/orderInfoSlice';
+import {
+  selectIngredients,
+  selectOrderInfo
+} from '../../services/selectors';
 import { useDispatch, useSelector } from '../../services/store';
 
 import type { TIngredient } from '@utils-types';
@@ -17,8 +21,8 @@ export const OrderInfo = (): React.JSX.Element => {
   const { number } = useParams();
 
   // Получаем данные заказа и список всех ингредиентов из Redux.
-  const order = useSelector((state) => state.orderInfo.order);
-  const ingredients = useSelector((state) => state.ingredients.ingredients);
+  const order = useSelector(selectOrderInfo);
+  const ingredients = useSelector(selectIngredients);
 
   useEffect(() => {
     // Загружаем данные заказа по номеру из маршрута.

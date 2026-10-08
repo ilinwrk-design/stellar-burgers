@@ -17,24 +17,19 @@ import {
   ResetPassword
 } from '@pages';
 import { Preloader } from '@ui';
-import {
-  Route,
-  Routes,
-  useLocation,
-  useNavigate
-} from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-
-import { selectIngredients } from '../../services/selectors';
 
 import { getCookie } from '@utils/cookie';
 
 import { getIngredients } from '../../services/ingredientsSlice';
-import {
-  authCheckFinished,
-  getUser
-} from '../../services/userSlice';
+import { authCheckFinished, getUser } from '../../services/userSlice';
 import { useDispatch, useSelector } from '../../services/store';
+import {
+  selectIngredients,
+  selectIngredientsLoading,
+  selectIngredientsError
+} from '../../services/selectors';
 
 import type { AppContentProps } from './type';
 
@@ -45,11 +40,10 @@ import styles from './app.module.css';
 const App = (): React.JSX.Element => {
   const dispatch = useDispatch();
 
- const ingredients = useSelector(selectIngredients);
-  const isIngredientsLoading = useSelector(
-    (state) => state.ingredients.isLoading
-  );
-  const ingredientsError = useSelector((state) => state.ingredients.error);
+  // Получаем ингредиенты и состояние запроса через именованные селекторы.
+  const ingredients = useSelector(selectIngredients);
+  const isIngredientsLoading = useSelector(selectIngredientsLoading);
+  const ingredientsError = useSelector(selectIngredientsError);
 
   useEffect(() => {
     void dispatch(getIngredients());
@@ -103,18 +97,16 @@ const RouteComponent = (): React.JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Если пользователь открыл детали кликом со страницы,
-  // сохраняем текущую страницу как фон для модального окна.
+  // Сохраняем страницу под модальным окном.
   const backgroundLocation = location.state?.background;
 
-  // При закрытии модального окна возвращаемся на предыдущую страницу.
+  // Возвращаемся на предыдущую страницу при закрытии модалки.
   const handleCloseModal = (): void => {
     void navigate(-1);
   };
 
   return (
     <>
-      {/* При открытии модалки сохраняем под ней предыдущую страницу. */}
       <Routes location={backgroundLocation || location}>
         <Route path='/' element={<ConstructorPage />} />
 
@@ -174,13 +166,10 @@ const RouteComponent = (): React.JSX.Element => {
           }
         />
 
-        {/* При прямом переходе по URL детали показываются как отдельная страница. */}
+        {/* Прямые переходы открывают детали как отдельную страницу. */}
         <Route path='/feed/:number' element={<OrderInfo />} />
 
-        <Route
-          path='/ingredients/:id'
-          element={<IngredientDetails />}
-        />
+        <Route path='/ingredients/:id' element={<IngredientDetails />} />
 
         <Route
           path='/profile/orders/:number'
@@ -194,7 +183,7 @@ const RouteComponent = (): React.JSX.Element => {
         <Route path='*' element={<NotFound404 />} />
       </Routes>
 
-      {/* Если есть фоновая страница, детали отображаем поверх неё в Modal. */}
+      {/* При переходе со страницы детали открываются в модальном окне. */}
       {backgroundLocation && (
         <Routes>
           <Route

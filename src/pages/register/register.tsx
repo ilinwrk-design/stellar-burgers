@@ -2,6 +2,7 @@ import { RegisterUI } from '@ui-pages';
 import { type SyntheticEvent, useState } from 'react';
 
 import { registerUser } from '../../services/userSlice';
+import { selectUserError } from '../../services/selectors';
 import { useDispatch, useSelector } from '../../services/store';
 
 export const Register = (): React.JSX.Element => {
@@ -11,7 +12,7 @@ export const Register = (): React.JSX.Element => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const error = useSelector((state) => state.user.error);
+  const error = useSelector(selectUserError);
 
   const handleSubmit = (e: SyntheticEvent): void => {
     e.preventDefault();

@@ -3,6 +3,7 @@ import { type SyntheticEvent, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { resetPassword } from '../../services/userSlice';
+import { selectUserError } from '../../services/selectors';
 import { useDispatch, useSelector } from '../../services/store';
 
 export const ResetPassword = (): React.JSX.Element => {
@@ -13,7 +14,7 @@ export const ResetPassword = (): React.JSX.Element => {
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
 
-  const error = useSelector((state) => state.user.error);
+  const error = useSelector(selectUserError);
 
   useEffect(() => {
     // На страницу сброса пароля можно попасть только после запроса восстановления.

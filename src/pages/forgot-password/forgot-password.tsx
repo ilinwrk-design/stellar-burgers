@@ -3,6 +3,7 @@ import { type SyntheticEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { forgotPassword } from '../../services/userSlice';
+import { selectUserError } from '../../services/selectors';
 import { useDispatch, useSelector } from '../../services/store';
 
 export const ForgotPassword = (): React.JSX.Element => {
@@ -11,7 +12,7 @@ export const ForgotPassword = (): React.JSX.Element => {
 
   const [email, setEmail] = useState('');
 
-  const error = useSelector((state) => state.user.error);
+  const error = useSelector(selectUserError);
 
   const handleSubmit = async (e: SyntheticEvent): Promise<void> => {
     e.preventDefault();

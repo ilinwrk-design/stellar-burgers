@@ -3,13 +3,17 @@ import { FeedUI } from '@ui-pages';
 import { useEffect } from 'react';
 
 import { getFeed } from '../../services/feedSlice';
+import {
+  selectFeedLoading,
+  selectFeedOrders
+} from '../../services/selectors';
 import { useDispatch, useSelector } from '../../services/store';
 
 export const Feed = (): React.JSX.Element => {
   const dispatch = useDispatch();
 
-  const orders = useSelector((state) => state.feed.orders);
-  const isLoading = useSelector((state) => state.feed.isLoading);
+  const orders = useSelector(selectFeedOrders);
+  const isLoading = useSelector(selectFeedLoading);
 
   useEffect(() => {
     void dispatch(getFeed());

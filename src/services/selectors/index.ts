@@ -26,3 +26,13 @@ export const selectOrderRequest = (state: RootState) =>
 // Получаем данные заказа для модального окна.
 export const selectOrderModalData = (state: RootState) =>
   state.order.orderModalData;
+
+// Получаем состояние общей ленты заказов.
+export const selectFeed = (state: RootState) => state.feed;
+
+// Получаем заказы из общей ленты.
+export const selectFeedOrders = (state: RootState) => state.feed.orders;
+
+// Получаем состояние загрузки ленты.
+export const selectFeedLoading = (state: RootState) =>
+  state.feed.isLoading;

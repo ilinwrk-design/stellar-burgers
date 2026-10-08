@@ -6,6 +6,10 @@ export const selectUser = (state: RootState) => state.user.user;
 // Получаем ошибку запроса пользователя.
 export const selectUserError = (state: RootState) => state.user.error;
 
+// Получаем состояние первоначальной проверки авторизации.
+export const selectIsAuthChecked = (state: RootState) =>
+  state.user.isAuthChecked;
+
 // Получаем список ингредиентов.
 export const selectIngredients = (state: RootState) =>
   state.ingredients.ingredients;

@@ -1,6 +1,7 @@
 import { IngredientDetailsUI, Preloader } from '@ui';
 import { useParams } from 'react-router-dom';
 
+import { selectIngredients } from '../../services/selectors';
 import { useSelector } from '../../services/store';
 
 export const IngredientDetails = (): React.JSX.Element => {
@@ -8,9 +9,7 @@ export const IngredientDetails = (): React.JSX.Element => {
   const { id } = useParams();
 
   // Получаем список всех ингредиентов из Redux.
-  const ingredients = useSelector(
-    (state) => state.ingredients.ingredients
-  );
+  const ingredients = useSelector(selectIngredients);
 
   // Находим ингредиент с id из текущего маршрута.
   const ingredientData = ingredients.find(

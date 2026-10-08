@@ -2,6 +2,10 @@ import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
 import { Preloader } from '@ui';
+import {
+  selectIsAuthChecked,
+  selectUser
+} from '../../services/selectors';
 import { useSelector } from '../../services/store';
 
 type TProtectedRouteProps = {
@@ -13,8 +17,8 @@ export const ProtectedRoute = ({
   children,
   onlyUnAuth = false
 }: TProtectedRouteProps): React.JSX.Element => {
-  const user = useSelector((state) => state.user.user);
-  const isAuthChecked = useSelector((state) => state.user.isAuthChecked);
+  const user = useSelector(selectUser);
+  const isAuthChecked = useSelector(selectIsAuthChecked);
 
   const location = useLocation();
 

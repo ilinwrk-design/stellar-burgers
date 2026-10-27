@@ -23,5 +23,21 @@ test.describe('Проверка конструктора бургера', () => 
     await expect(
       page.getByText('Биокотлета из марсианской Магнолии')
     ).toBeVisible();
-  });
+    });
+
+  test('Добавление булки в конструктор', async ({ page }) => {
+    const bun = page
+      .getByText('Краторная булка N-200i')
+      .locator('xpath=../..');
+
+    await bun.getByRole('button', { name: 'Добавить' }).click();
+
+    await expect(
+      page.getByText('Краторная булка N-200i (верх)')
+    ).toBeVisible();
+
+    await expect(
+      page.getByText('Краторная булка N-200i (низ)')
+    ).toBeVisible();
+});
 });

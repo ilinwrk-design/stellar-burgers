@@ -40,4 +40,15 @@ test.describe('Проверка конструктора бургера', () => 
       page.getByText('Краторная булка N-200i (низ)')
     ).toBeVisible();
 });
+  test('Добавление начинки в конструктор', async ({ page }) => {
+    const ingredient = page
+      .getByText('Биокотлета из марсианской Магнолии')
+      .locator('xpath=../..');
+
+    await ingredient.getByRole('button', { name: 'Добавить' }).click();
+
+    await expect(
+      page.getByText('Биокотлета из марсианской Магнолии').last()
+    ).toBeVisible();
+  });
 });

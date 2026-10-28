@@ -2,6 +2,7 @@ import constructorReducer, {
   addIngredient,
   removeIngredient,
   moveIngredient,
+  clearConstructor,
 } from './constructorSlice';
 import type { TIngredient } from '@utils-types';
 
@@ -117,5 +118,42 @@ describe('Редьюсер конструктора бургера', () => {
     );
 
     expect(state.ingredients).toEqual([secondIngredient, firstIngredient]);
+  });
+  test('Очищает конструктор бургера', () => {
+    const bun = {
+      _id: 'test-bun-1',
+      id: 'bun-1',
+      name: 'Краторная булка N-200i',
+      type: 'bun' as const,
+      proteins: 80,
+      fat: 24,
+      carbohydrates: 53,
+      calories: 420,
+      price: 1255,
+      image: 'https://example.com/bun.png',
+      image_mobile: 'https://example.com/bun-mobile.png',
+      image_large: 'https://example.com/bun-large.png',
+    };
+
+    const filling = {
+      ...bun,
+      _id: 'test-main-1',
+      id: 'filling-1',
+      name: 'Биокотлета из марсианской Магнолии',
+      type: 'main' as const,
+    };
+
+    const state = constructorReducer(
+      {
+        bun,
+        ingredients: [filling],
+      },
+      clearConstructor()
+    );
+
+    expect(state).toEqual({
+      bun: null,
+      ingredients: [],
+    });
   });
 });

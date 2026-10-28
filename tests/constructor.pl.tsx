@@ -7,18 +7,18 @@ test.describe('Проверка конструктора бургера', () => 
       update: false,
       notFound: 'abort',
     });
-     await page.routeFromHAR('tests/hars/user.har', {
-    url: '**/api/auth/user',
-    update: false,
-    notFound: 'abort'
-  });
+    await page.routeFromHAR('tests/hars/user.har', {
+      url: '**/api/auth/user',
+      update: false,
+      notFound: 'abort',
+    });
 
-  await page.routeFromHAR('tests/hars/order.har', {
-    url: '**/api/orders',
-    update: false,
-    notFound: 'abort'
-  });
-  
+    await page.routeFromHAR('tests/hars/order.har', {
+      url: '**/api/orders',
+      update: false,
+      notFound: 'abort',
+    });
+
     await page.goto('/');
   });
 
@@ -93,5 +93,51 @@ test.describe('Проверка конструктора бургера', () => 
       });
 
     await expect(modal).not.toBeVisible();
+  });
+
+  test('Создание заказа', async ({ page }) => {
+    await page.context().addCookies([
+      {
+        name: 'accessToken',
+        value: 'Bearer test-access-token',
+        url: 'http://localhost:4000',
+      },
+    ]);
+
+    await page.evaluate(() => {
+      localStorage.setItem('refreshToken', 'test-refresh-token');
+    });
+
+    await page.reload();
+
+    await expect(page.getByRole('heading', { name: 'Соберите бургер' })).toBeVisible();
+    const bun = page.getByText('Краторная булка N-200i').locator('xpath=../..');
+
+    await bun.getByRole('button', { name: 'Добавить' }).click();
+
+    const ingredient = page
+      .getByText('Биокотлета из марсианской Магнолии')
+      .locator('xpath=../..');
+
+    await ingredient.getByRole('button', { name: 'Добавить' }).click();
+
+    await expect(page.getByText('Краторная булка N-200i (верх)')).toBeVisible();
+
+    await expect(page.getByText('Краторная булка N-200i (низ)')).toBeVisible();
+
+    await expect(
+      page.getByText('Биокотлета из марсианской Магнолии').last()
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Оформить заказ' }).click();
+
+    await expect(page.getByText('12345')).toBeVisible();
+    await expect(page.getByText('Выберите булки').first()).toBeVisible();
+
+    await expect(page.getByText('Выберите начинку')).toBeVisible();
+
+    await expect(page.getByText('Выберите булки').last()).toBeVisible();
+    await page.getByRole('button', { name: 'Закрыть' }).click();
+
+    await expect(page.getByText('12345')).not.toBeVisible();
   });
 });

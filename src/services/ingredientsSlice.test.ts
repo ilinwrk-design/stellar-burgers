@@ -60,4 +60,20 @@ describe('Редьюсер ингредиентов', () => {
       error: null,
     });
   });
+  test('Сохраняет ошибку при неудачном запросе', () => {
+    const state = ingredientsReducer(
+      {
+        ingredients: [],
+        isLoading: true,
+        error: null,
+      },
+      getIngredients.rejected(new Error('Ошибка сервера'), 'requestId')
+    );
+
+    expect(state).toEqual({
+      ingredients: [],
+      isLoading: false,
+      error: 'Ошибка сервера',
+    });
+  });
 });

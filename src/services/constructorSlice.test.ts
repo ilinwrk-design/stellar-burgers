@@ -1,4 +1,8 @@
-import constructorReducer, { addIngredient, removeIngredient } from './constructorSlice';
+import constructorReducer, {
+  addIngredient,
+  removeIngredient,
+  moveIngredient,
+} from './constructorSlice';
 import type { TIngredient } from '@utils-types';
 
 describe('Редьюсер конструктора бургера', () => {
@@ -80,5 +84,38 @@ describe('Редьюсер конструктора бургера', () => {
 
     expect(state.ingredients).toEqual([]);
     expect(state.bun).toBeNull();
+  });
+  test('Изменение порядка начинок в конструкторе', () => {
+    const firstIngredient = {
+      _id: 'test-main-1',
+      id: 'filling-1',
+      name: 'Первая начинка',
+      type: 'main' as const,
+      proteins: 10,
+      fat: 10,
+      carbohydrates: 10,
+      calories: 100,
+      price: 100,
+      image: 'https://example.com/first.png',
+      image_mobile: 'https://example.com/first-mobile.png',
+      image_large: 'https://example.com/first-large.png',
+    };
+
+    const secondIngredient = {
+      ...firstIngredient,
+      _id: 'test-main-2',
+      id: 'filling-2',
+      name: 'Вторая начинка',
+    };
+
+    const state = constructorReducer(
+      {
+        bun: null,
+        ingredients: [firstIngredient, secondIngredient],
+      },
+      moveIngredient({ fromIndex: 0, toIndex: 1 })
+    );
+
+    expect(state.ingredients).toEqual([secondIngredient, firstIngredient]);
   });
 });

@@ -7,7 +7,18 @@ test.describe('Проверка конструктора бургера', () => 
       update: false,
       notFound: 'abort',
     });
+     await page.routeFromHAR('tests/hars/user.har', {
+    url: '**/api/auth/user',
+    update: false,
+    notFound: 'abort'
+  });
 
+  await page.routeFromHAR('tests/hars/order.har', {
+    url: '**/api/orders',
+    update: false,
+    notFound: 'abort'
+  });
+  
     await page.goto('/');
   });
 

@@ -30,4 +30,28 @@ describe('Редьюсер конструктора бургера', () => {
     expect(state.bun).toEqual(expect.objectContaining(bun));
     expect(state.ingredients).toEqual([]);
   });
+  test('Добавляет начинку в конструктор', () => {
+    const filling: TIngredient = {
+      _id: 'test-main-1',
+      name: 'Биокотлета из марсианской Магнолии',
+      type: 'main',
+      proteins: 420,
+      fat: 142,
+      carbohydrates: 242,
+      calories: 4242,
+      price: 424,
+      image: 'https://example.com/main.png',
+      image_mobile: 'https://example.com/main-mobile.png',
+      image_large: 'https://example.com/main-large.png',
+    };
+
+    const state = constructorReducer(
+      { bun: null, ingredients: [] },
+      addIngredient(filling)
+    );
+
+    expect(state.bun).toBeNull();
+    expect(state.ingredients).toHaveLength(1);
+    expect(state.ingredients[0]).toEqual(expect.objectContaining(filling));
+  });
 });

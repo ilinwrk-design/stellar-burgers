@@ -89,12 +89,9 @@ test.describe('Проверка конструктора бургера', () => 
 
     await expect(modal).toBeVisible();
 
-    await page
-      .locator('[class*="overlay"]')
-      .last()
-      .click({
-        position: { x: 10, y: 10 },
-      });
+    await page.getByTestId('modal-overlay').click({
+      position: { x: 10, y: 10 },
+    });
 
     await expect(modal).not.toBeVisible();
   });

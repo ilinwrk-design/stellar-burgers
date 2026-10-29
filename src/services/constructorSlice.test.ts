@@ -59,8 +59,9 @@ describe('Редьюсер конструктора бургера', () => {
     expect(state.ingredients).toHaveLength(1);
     expect(state.ingredients[0]).toEqual(expect.objectContaining(filling));
   });
+
   test('Удаляет начинку из конструктора', () => {
-    const filling = {
+    const firstIngredient = {
       _id: 'test-main-1',
       id: 'filling-1',
       name: 'Биокотлета из марсианской Магнолии',
@@ -75,17 +76,26 @@ describe('Редьюсер конструктора бургера', () => {
       image_large: 'https://example.com/main-large.png',
     };
 
+    const secondIngredient = {
+      ...firstIngredient,
+      _id: 'test-main-2',
+      id: 'filling-2',
+      name: 'Вторая начинка',
+    };
+
     const state = constructorReducer(
       {
         bun: null,
-        ingredients: [filling],
+        ingredients: [firstIngredient, secondIngredient],
       },
-      removeIngredient(filling)
+      removeIngredient(firstIngredient)
     );
 
-    expect(state.ingredients).toEqual([]);
+    expect(state.ingredients).toHaveLength(1);
+    expect(state.ingredients).toEqual([secondIngredient]);
     expect(state.bun).toBeNull();
   });
+
   test('Изменение порядка начинок в конструкторе', () => {
     const firstIngredient = {
       _id: 'test-main-1',

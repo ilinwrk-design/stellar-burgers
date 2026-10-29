@@ -53,8 +53,10 @@ test.describe('Проверка конструктора бургера', () => 
 
     await ingredient.getByRole('button', { name: 'Добавить' }).click();
 
+    const constructor = page.locator('section[class*="burger_constructor"]');
+
     await expect(
-      page.getByText('Биокотлета из марсианской Магнолии').last()
+      constructor.getByText('Биокотлета из марсианской Магнолии')
     ).toBeVisible();
   });
 

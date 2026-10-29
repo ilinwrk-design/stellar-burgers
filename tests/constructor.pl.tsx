@@ -73,13 +73,11 @@ test.describe('Проверка конструктора бургера', () => 
   test('Закрытие модального окна по крестику', async ({ page }) => {
     await page.getByText('Краторная булка N-200i').click();
 
-    const modal = page.getByRole('heading', {
-      name: 'Детали ингредиента',
-    });
+    const modal = page.getByTestId('modal');
 
     await expect(modal).toBeVisible();
 
-    await page.getByRole('button', { name: 'Закрыть' }).click();
+    await modal.getByRole('button', { name: 'Закрыть' }).click();
 
     await expect(modal).not.toBeVisible();
   });
@@ -87,9 +85,7 @@ test.describe('Проверка конструктора бургера', () => 
   test('Закрытие модального окна по оверлею', async ({ page }) => {
     await page.getByText('Краторная булка N-200i').click();
 
-    const modal = page.getByRole('heading', {
-      name: 'Детали ингредиента',
-    });
+    const modal = page.getByTestId('modal');
 
     await expect(modal).toBeVisible();
 
@@ -119,6 +115,9 @@ test.describe('Проверка конструктора бургера', () => 
     await page.reload();
 
     await expect(page.getByRole('heading', { name: 'Соберите бургер' })).toBeVisible();
+
+    const constructor = page.locator('section[class*="burger_constructor"]');
+
     const bun = page.getByText('Краторная булка N-200i').locator('xpath=../..');
 
     await bun.getByRole('button', { name: 'Добавить' }).click();
@@ -129,23 +128,31 @@ test.describe('Проверка конструктора бургера', () => 
 
     await ingredient.getByRole('button', { name: 'Добавить' }).click();
 
-    await expect(page.getByText('Краторная булка N-200i (верх)')).toBeVisible();
+    // Проверяем добавленные ингредиенты внутри конструктора.
+    await expect(constructor.getByText('Краторная булка N-200i (верх)')).toBeVisible();
 
-    await expect(page.getByText('Краторная булка N-200i (низ)')).toBeVisible();
+    await expect(constructor.getByText('Краторная булка N-200i (низ)')).toBeVisible();
 
     await expect(
-      page.getByText('Биокотлета из марсианской Магнолии').last()
+      constructor.getByText('Биокотлета из марсианской Магнолии')
     ).toBeVisible();
+
     await page.getByRole('button', { name: 'Оформить заказ' }).click();
 
-    await expect(page.getByText('12345')).toBeVisible();
-    await expect(page.getByText('Выберите булки').first()).toBeVisible();
+    // Проверяем номер заказа внутри модального окна.
+    const modal = page.getByTestId('modal');
 
-    await expect(page.getByText('Выберите начинку')).toBeVisible();
+    await expect(modal).toBeVisible();
+    await expect(modal.getByText('12345')).toBeVisible();
 
-    await expect(page.getByText('Выберите булки').last()).toBeVisible();
-    await page.getByRole('button', { name: 'Закрыть' }).click();
+    // Проверяем очистку конструктора после оформления заказа.
+    await expect(constructor.getByText('Выберите булки')).toHaveCount(2);
 
-    await expect(page.getByText('12345')).not.toBeVisible();
+    await expect(constructor.getByText('Выберите начинку')).toBeVisible();
+
+    // Закрываем модальное окно заказа.
+    await modal.getByRole('button', { name: 'Закрыть' }).click();
+
+    await expect(modal).not.toBeVisible();
   });
 });

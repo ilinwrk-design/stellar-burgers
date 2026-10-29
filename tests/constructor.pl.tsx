@@ -63,11 +63,11 @@ test.describe('Проверка конструктора бургера', () => 
   test('Открытие модального окна ингредиента', async ({ page }) => {
     await page.getByText('Краторная булка N-200i').click();
 
-    await expect(
-      page.getByRole('heading', { name: 'Детали ингредиента' })
-    ).toBeVisible();
+    const modal = page.getByTestId('modal');
 
-    await expect(page.getByText('Краторная булка N-200i').last()).toBeVisible();
+    await expect(modal).toBeVisible();
+    await expect(modal.getByText('Детали ингредиента')).toBeVisible();
+    await expect(modal.getByText('Краторная булка N-200i')).toBeVisible();
   });
 
   test('Закрытие модального окна по крестику', async ({ page }) => {

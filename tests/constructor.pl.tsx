@@ -31,13 +31,19 @@ test.describe('Проверка конструктора бургера', () => 
   });
 
   test('Добавление булки в конструктор', async ({ page }) => {
-    const bun = page.getByText('Краторная булка N-200i').locator('xpath=../..');
+    const bunName = 'Краторная булка N-200i';
 
-    await bun.getByRole('button', { name: 'Добавить' }).click();
+    await page
+      .getByText(bunName)
+      .locator('xpath=../..')
+      .getByRole('button', { name: 'Добавить' })
+      .click();
 
-    await expect(page.getByText('Краторная булка N-200i (верх)')).toBeVisible();
+    const constructor = page.locator('section[class*="burger_constructor"]');
 
-    await expect(page.getByText('Краторная булка N-200i (низ)')).toBeVisible();
+    await expect(constructor.getByText(`${bunName} (верх)`)).toBeVisible();
+
+    await expect(constructor.getByText(`${bunName} (низ)`)).toBeVisible();
   });
 
   test('Добавление начинки в конструктор', async ({ page }) => {
